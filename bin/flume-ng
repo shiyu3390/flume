@@ -32,7 +32,7 @@ CLEAN_FLAG=1
 ################################
 # functions
 ################################
-JAVA_HOME=/home/sinorail/jdk1.8.0_121
+#JAVA_HOME=/home/sinorail/jdk1.8.0_121
 info() {
   if [ ${CLEAN_FLAG} -ne 0 ]; then
     local msg=$1
