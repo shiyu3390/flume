@@ -1,0 +1,45 @@
+a1.sources = keystone
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source keystone------------------------------
+a1.sources.keystone.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.keystone.channels = c1
+a1.sources.keystone.skipToEnd = true
+a1.sources.keystone.positionFile = ./keystone.json
+a1.sources.keystone.filegroups = f1
+a1.sources.keystone.fileHeader = true
+a1.sources.keystone.interceptors = i1 i2 i3 i4
+a1.sources.keystone.interceptors.i1.type = host
+a1.sources.keystone.interceptors.i1.useIP = false
+a1.sources.keystone.interceptors.i1.preserveExisting = true
+a1.sources.keystone.interceptors.i1.hostHeader = hostname
+a1.sources.keystone.interceptors.i2.type = traceback
+a1.sources.keystone.interceptors.i3.type = regex_extractor
+a1.sources.keystone.interceptors.i3.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.keystone.interceptors.i3.serializers = s1 s2 s3 s4 s5
+a1.sources.keystone.interceptors.i3.serializers.s1.name = logDate
+a1.sources.keystone.interceptors.i3.serializers.s2.name = pid
+a1.sources.keystone.interceptors.i3.serializers.s3.name = logLevel
+a1.sources.keystone.interceptors.i3.serializers.s4.name = package
+a1.sources.keystone.interceptors.i3.serializers.s5.name = logContent
+a1.sources.keystone.interceptors.i4.type = formatlogdate
+a1.sources.keystone.multiline = true
+a1.sources.keystone.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.keystone.multilinePatternBelong = previous
+a1.sources.keystone.multilineMatched = false
+a1.sources.keystone.multilineEventTimeoutSeconds = 10
+a1.sources.keystone.multilineMaxBytes = 10485760
+a1.sources.keystone.multilineMaxLines = 500
+
+a1.sources.keystone.filegroups.f1 = /var/log/kolla/keystone/keystone.log
+a1.sources.keystone.headers.f1.isCloud = 1
+a1.sources.keystone.headers.f1.cluster = BJPOC-REGION1
+a1.sources.keystone.headers.f1.module = keystone
+a1.sources.keystone.headers.f1.role = keystone-keystone
+a1.sources.keystone.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

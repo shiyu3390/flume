@@ -1,0 +1,124 @@
+a1.sources = ceph-osd_mon ceph-ceph_audit ceph-client
+a1.sinks = k1 
+a1.channels = c1
+#--------------------source ceph-osd & ceph-mon------------------------------
+a1.sources.ceph-osd_mon.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.ceph-osd_mon.channels = c1
+a1.sources.ceph-osd_mon.skipToEnd = true
+a1.sources.ceph-osd_mon.positionFile = ./ceph-osd_mon.json
+a1.sources.ceph-osd_mon.filegroups = f1 f2
+a1.sources.ceph-osd_mon.fileHeader = true
+a1.sources.ceph-osd_mon.interceptors = i1 i2 i3
+a1.sources.ceph-osd_mon.interceptors.i1.type = host
+a1.sources.ceph-osd_mon.interceptors.i1.useIP = false
+a1.sources.ceph-osd_mon.interceptors.i1.preserveExisting = true
+a1.sources.ceph-osd_mon.interceptors.i1.hostHeader = hostname
+a1.sources.ceph-osd_mon.interceptors.i2.type = regex_extractor
+a1.sources.ceph-osd_mon.interceptors.i2.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+(\\S+)\\s+(\\d{1})\\s+([\\s\\S]*)
+a1.sources.ceph-osd_mon.interceptors.i2.serializers = s1 s2 s3 s4
+a1.sources.ceph-osd_mon.interceptors.i2.serializers.s1.name = logDate
+a1.sources.ceph-osd_mon.interceptors.i2.serializers.s2.name = pid
+a1.sources.ceph-osd_mon.interceptors.i2.serializers.s3.name = logLevel
+a1.sources.ceph-osd_mon.interceptors.i2.serializers.s4.name = logContent
+a1.sources.ceph-osd_mon.interceptors.i3.type = formatlogdate
+a1.sources.ceph-osd_mon.multiline = true
+a1.sources.ceph-osd_mon.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+(\\S+)\\s+(\\d{1})\\s+([\\s\\S]*)
+a1.sources.ceph-osd_mon.multilinePatternBelong = previous
+a1.sources.ceph-osd_mon.multilineMatched = false
+a1.sources.ceph-osd_mon.multilineEventTimeoutSeconds = 10
+a1.sources.ceph-osd_mon.multilineMaxBytes = 10485760
+a1.sources.ceph-osd_mon.multilineMaxLines = 500
+
+a1.sources.ceph-osd_mon.filegroups.f1 = /var/log/ceph/ceph-mon.*.log
+a1.sources.ceph-osd_mon.headers.f1.isCloud = 0
+a1.sources.ceph-osd_mon.headers.f1.cluster = ceph
+a1.sources.ceph-osd_mon.headers.f1.module = ceph
+a1.sources.ceph-osd_mon.headers.f1.role = ceph-mon
+a1.sources.ceph-osd_mon.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.ceph-osd_mon.filegroups.f2 = /var/log/ceph/ceph-osd.*.log
+a1.sources.ceph-osd_mon.headers.f2.isCloud = 0
+a1.sources.ceph-osd_mon.headers.f2.cluster = ceph
+a1.sources.ceph-osd_mon.headers.f2.module = ceph
+a1.sources.ceph-osd_mon.headers.f2.role = ceph-osd
+a1.sources.ceph-osd_mon.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+#--------------------source ceph-ceph & ceph-audit------------------------------
+a1.sources.ceph-ceph_audit.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.ceph-ceph_audit.channels = c1
+a1.sources.ceph-ceph_audit.skipToEnd = true
+a1.sources.ceph-ceph_audit.positionFile = ./ceph-ceph_audit.json
+a1.sources.ceph-ceph_audit.filegroups = f1 f2
+a1.sources.ceph-ceph_audit.fileHeader = true
+a1.sources.ceph-ceph_audit.interceptors = i1 i2 i3
+a1.sources.ceph-ceph_audit.interceptors.i1.type = host
+a1.sources.ceph-ceph_audit.interceptors.i1.useIP = false
+a1.sources.ceph-ceph_audit.interceptors.i1.preserveExisting = true
+a1.sources.ceph-ceph_audit.interceptors.i1.hostHeader = hostname
+a1.sources.ceph-ceph_audit.interceptors.i2.type = regex_extractor
+a1.sources.ceph-ceph_audit.interceptors.i2.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+([\\s\\S]*)
+a1.sources.ceph-ceph_audit.interceptors.i2.serializers = s1 s2
+a1.sources.ceph-ceph_audit.interceptors.i2.serializers.s1.name = logDate
+a1.sources.ceph-ceph_audit.interceptors.i2.serializers.s2.name = logContent
+a1.sources.ceph-ceph_audit.interceptors.i3.type = formatlogdate
+a1.sources.ceph-ceph_audit.multiline = true
+a1.sources.ceph-ceph_audit.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+([\\s\\S]*)
+a1.sources.ceph-ceph_audit.multilinePatternBelong = previous
+a1.sources.ceph-ceph_audit.multilineMatched = false
+a1.sources.ceph-ceph_audit.multilineEventTimeoutSeconds = 10
+a1.sources.ceph-ceph_audit.multilineMaxBytes = 10485760
+a1.sources.ceph-ceph_audit.multilineMaxLines = 500
+
+a1.sources.ceph-ceph_audit.filegroups.f1 = /var/log/ceph/ceph.log
+a1.sources.ceph-ceph_audit.headers.f1.isCloud = 0
+a1.sources.ceph-ceph_audit.headers.f1.cluster = ceph
+a1.sources.ceph-ceph_audit.headers.f1.module = ceph
+a1.sources.ceph-ceph_audit.headers.f1.role = ceph-ceph
+a1.sources.ceph-ceph_audit.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.ceph-ceph_audit.filegroups.f2 = /var/log/ceph/ceph.audit.log
+a1.sources.ceph-ceph_audit.headers.f2.isCloud = 0
+a1.sources.ceph-ceph_audit.headers.f2.cluster = ceph
+a1.sources.ceph-ceph_audit.headers.f2.module = ceph
+a1.sources.ceph-ceph_audit.headers.f2.role = ceph-audit
+a1.sources.ceph-ceph_audit.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+#--------------------source ceph-client------------------------------
+a1.sources.ceph-client.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.ceph-client.channels = c1
+a1.sources.ceph-client.skipToEnd = true
+a1.sources.ceph-client.positionFile = ./ceph-client.json
+a1.sources.ceph-client.filegroups = f1
+a1.sources.ceph-client.fileHeader = true
+a1.sources.ceph-client.interceptors = i1 i2 i3
+a1.sources.ceph-client.interceptors.i1.type = host
+a1.sources.ceph-client.interceptors.i1.useIP = false
+a1.sources.ceph-client.interceptors.i1.preserveExisting = true
+a1.sources.ceph-client.interceptors.i1.hostHeader = hostname
+a1.sources.ceph-client.interceptors.i2.type = regex_extractor
+a1.sources.ceph-client.interceptors.i2.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+(\\S+)\\s+(-\\d{1})\\s+([\\s\\S]*)
+a1.sources.ceph-client.interceptors.i2.serializers = s1 s2 s3 s4
+a1.sources.ceph-client.interceptors.i2.serializers.s1.name = logDate
+a1.sources.ceph-client.interceptors.i2.serializers.s2.name = pid
+a1.sources.ceph-client.interceptors.i2.serializers.s3.name = logLevel
+a1.sources.ceph-client.interceptors.i2.serializers.s4.name = logContent
+a1.sources.ceph-client.interceptors.i3.type = formatlogdate
+a1.sources.ceph-client.multiline = true
+a1.sources.ceph-client.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d+)\\s+(\\S+)\\s+(-\\d{1})\\s+([\\s\\S]*)
+a1.sources.ceph-client.multilinePatternBelong = previous
+a1.sources.ceph-client.multilineMatched = false
+a1.sources.ceph-client.multilineEventTimeoutSeconds = 10
+a1.sources.ceph-client.multilineMaxBytes = 10485760
+a1.sources.ceph-client.multilineMaxLines = 500
+
+a1.sources.ceph-client.filegroups.f1 = /var/log/ceph/ceph-client.admin.log
+a1.sources.ceph-client.headers.f1.isCloud = 0
+a1.sources.ceph-client.headers.f1.cluster = ceph
+a1.sources.ceph-client.headers.f1.module = ceph
+a1.sources.ceph-client.headers.f1.role = ceph-client
+a1.sources.ceph-client.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

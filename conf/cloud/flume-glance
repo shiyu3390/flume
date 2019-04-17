@@ -1,0 +1,52 @@
+a1.sources = glance
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source glance------------------------------
+a1.sources.glance.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.glance.channels = c1
+a1.sources.glance.skipToEnd = true
+a1.sources.glance.positionFile = ./glance.json
+a1.sources.glance.filegroups = f1 f2
+a1.sources.glance.fileHeader = true
+a1.sources.glance.interceptors = i1 i2 i3 i4
+a1.sources.glance.interceptors.i1.type = host
+a1.sources.glance.interceptors.i1.useIP = false
+a1.sources.glance.interceptors.i1.preserveExisting = true
+a1.sources.glance.interceptors.i1.hostHeader = hostname
+a1.sources.glance.interceptors.i2.type = traceback
+a1.sources.glance.interceptors.i3.type = regex_extractor
+a1.sources.glance.interceptors.i3.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.glance.interceptors.i3.serializers = s1 s2 s3 s4 s5
+a1.sources.glance.interceptors.i3.serializers.s1.name = logDate
+a1.sources.glance.interceptors.i3.serializers.s2.name = pid
+a1.sources.glance.interceptors.i3.serializers.s3.name = logLevel
+a1.sources.glance.interceptors.i3.serializers.s4.name = package
+a1.sources.glance.interceptors.i3.serializers.s5.name = logContent
+a1.sources.glance.interceptors.i4.type = formatlogdate
+a1.sources.glance.multiline = true
+a1.sources.glance.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.glance.multilinePatternBelong = previous
+a1.sources.glance.multilineMatched = false
+a1.sources.glance.multilineEventTimeoutSeconds = 10
+a1.sources.glance.multilineMaxBytes = 10485760
+a1.sources.glance.multilineMaxLines = 500
+
+a1.sources.glance.filegroups.f1 = /var/log/kolla/glance/.*api.log
+a1.sources.glance.headers.f1.isCloud = 1
+a1.sources.glance.headers.f1.cluster = BJPOC-REGION1
+a1.sources.glance.headers.f1.module = glance
+a1.sources.glance.headers.f1.role = glance-api
+a1.sources.glance.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.glance.filegroups.f2 = /var/log/kolla/glance/.*registry.log
+a1.sources.glance.headers.f2.isCloud = 1
+a1.sources.glance.headers.f2.cluster = BJPOC-REGION1
+a1.sources.glance.headers.f2.module = glance
+a1.sources.glance.headers.f2.role = glance-registry
+a1.sources.glance.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

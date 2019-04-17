@@ -1,0 +1,41 @@
+a1.sources = system
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source system------------------------------
+a1.sources.system.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.system.channels = c1
+a1.sources.system.skipToEnd = true
+a1.sources.system.positionFile = ./system.json
+a1.sources.system.filegroups = f1
+a1.sources.system.fileHeader = true
+a1.sources.system.interceptors = i1 i2 i3
+a1.sources.system.interceptors.i1.type = host
+a1.sources.system.interceptors.i1.useIP = false
+a1.sources.system.interceptors.i1.preserveExisting = true
+a1.sources.system.interceptors.i1.hostHeader = hostname
+a1.sources.system.interceptors.i2.type = regex_extractor
+a1.sources.system.interceptors.i2.regex = ([a-zA-Z]{3}\\s+\\d+\\s+\\d{2}:\\d{2}:\\d{2})\\s+([\\s\\S]*)
+a1.sources.system.interceptors.i2.serializers = s1 s2
+a1.sources.system.interceptors.i2.serializers.s1.name = logDate
+a1.sources.system.interceptors.i2.serializers.s2.name = logContent
+a1.sources.system.interceptors.i3.type = formatlogdate
+a1.sources.system.multiline = true
+a1.sources.system.multilinePattern = ([a-zA-Z]{3}\\s+\\d+\\s+\\d{2}:\\d{2}:\\d{2})\\s+([\\s\\S]*)
+a1.sources.system.multilinePatternBelong = previous
+a1.sources.system.multilineMatched = false
+a1.sources.system.multilineEventTimeoutSeconds = 10
+a1.sources.system.multilineMaxBytes = 10485760
+a1.sources.system.multilineMaxLines = 500
+
+a1.sources.system.filegroups.f1 = /var/log/messages
+a1.sources.system.headers.f1.isCloud = 1
+a1.sources.system.headers.f1.cluster = BJPOC-REGION1
+a1.sources.system.headers.f1.module = messages
+a1.sources.system.headers.f1.role = messages
+a1.sources.system.headers.f1.dateFormat = MMM dd HH:mm:ss
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

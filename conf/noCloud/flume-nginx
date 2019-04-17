@@ -1,0 +1,75 @@
+a1.sources = nginx_access nginx_error
+a1.sinks = k1
+a1.channels = c1
+
+#-------------------------------nginx_access-----------------
+a1.sources.nginx_access.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.nginx_access.channels = c1
+a1.sources.nginx_access.skipToEnd = true
+a1.sources.nginx_access.positionFile = ./nginx_access.json
+a1.sources.nginx_access.filegroups = f1
+a1.sources.nginx_access.fileHeader = true
+a1.sources.nginx_access.interceptors = i1 i3 i4
+a1.sources.nginx_access.interceptors.i1.type = host
+a1.sources.nginx_access.interceptors.i1.useIP = false
+a1.sources.nginx_access.interceptors.i1.preserveExisting = true
+a1.sources.nginx_access.interceptors.i1.hostHeader = hostname
+a1.sources.nginx_access.multiline = true
+a1.sources.nginx_access.multilinePattern = \\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}\\s+\\S{1,}\\s+\\S{1,}\\s+\\[(\\d{1,2}\\/\\w{3}\\/\\d{4}[:]\\d{1,2}[:]\\d{1,2}[:]\\d{1,2})\\s+[+]\\d{1,5}\\]\\s+([\\s\\S]*)
+a1.sources.nginx_access.multilinePatternBelong = previous
+a1.sources.nginx_access.multilineMatched = false
+a1.sources.nginx_access.multilineEventTimeoutSeconds = 30
+a1.sources.nginx_access.multilineMaxBytes = 10485760
+a1.sources.nginx_access.multilineMaxLines = 500
+a1.sources.nginx_access.interceptors.i3.type = regex_extractor
+a1.sources.nginx_access.interceptors.i3.regex = \\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}\\s+\\S{1,}\\s+\\S{1,}\\s+\\[(\\d{1,2}\\/\\w{3}\\/\\d{4}[:]\\d{1,2}[:]\\d{1,2}[:]\\d{1,2})\\s+[+]\\d{1,5}\\]\\s+([\\s\\S]*)
+a1.sources.nginx_access.interceptors.i3.serializers = s1 s2 
+a1.sources.nginx_access.interceptors.i3.serializers.s1.name = logDate
+a1.sources.nginx_access.interceptors.i3.serializers.s2.name = logContent
+a1.sources.nginx_access.interceptors.i4.type = formatlogdate
+
+a1.sources.nginx_access.filegroups.f1 = /var/log/nginx/access.log
+a1.sources.nginx_access.headers.f1.isCloud = 0
+a1.sources.nginx_access.headers.f1.cluster = IAD
+a1.sources.nginx_access.headers.f1.module = Nginx
+a1.sources.nginx_access.headers.f1.role = access
+a1.sources.nginx_access.headers.f1.dateFormat = dd/MMM/yyyy:HH:mm:ss
+
+#-------------------------------nginx_error----------------------------
+a1.sources.nginx_error.type =org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.nginx_error.channels = c1
+a1.sources.nginx_error.skipToEnd = true
+a1.sources.nginx_error.positionFile = ./nginx-error.json
+a1.sources.nginx_error.filegroups = f1
+a1.sources.nginx_error.fileHeader = true
+a1.sources.nginx_error.interceptors = i1 i3 i4
+a1.sources.nginx_error.interceptors.i1.type = host
+a1.sources.nginx_error.interceptors.i1.useIP = false
+a1.sources.nginx_error.interceptors.i1.preserveExisting = true
+a1.sources.nginx_error.interceptors.i1.hostHeader = hostname
+a1.sources.nginx_error.multiline = true
+a1.sources.nginx_error.multilinePattern = (\\d{2,4}[/]\\d{2}[/]\\d{2}\\s\\d{2}[:]\\d{2}[:]\\d{2})\\s+\\[([warn]+|[info]+|[debug]+|[error]+)\\]\\s+([\\s\\S]*)
+a1.sources.nginx_error.multilinePatternBelong = previous
+a1.sources.nginx_error.multilineMatched = false
+a1.sources.nginx_error.multilineEventTimeoutSeconds = 30
+a1.sources.nginx_error.multilineMaxBytes = 10485760
+a1.sources.nginx_error.multilineMaxLines = 500
+a1.sources.nginx_error.interceptors.i3.type = regex_extractor
+a1.sources.nginx_error.interceptors.i3.regex = (\\d{2,4}[/]\\d{2}[/]\\d{2}\\s\\d{2}[:]\\d{2}[:]\\d{2})\\s+\\[([warn]+|[info]+|[debug]+|[error]+)\\]\\s+([\\s\\S]*)
+a1.sources.nginx_error.interceptors.i3.serializers = s1 s2 s3
+a1.sources.nginx_error.interceptors.i3.serializers.s1.name = logDate
+a1.sources.nginx_error.interceptors.i3.serializers.s2.name = logLevel
+a1.sources.nginx_error.interceptors.i3.serializers.s3.name = logContent
+a1.sources.nginx_error.interceptors.i4.type = formatlogdate
+
+a1.sources.nginx_error.filegroups.f1 = /var/log/nginx/error.log
+a1.sources.nginx_error.headers.f1.isCloud = 0
+a1.sources.nginx_error.headers.f1.cluster = IAD
+a1.sources.nginx_error.headers.f1.module = Nginx
+a1.sources.nginx_error.headers.f1.role = error
+a1.sources.nginx_error.headers.f1.dateFormat = yyyy/MM/dd HH:mm:ss
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

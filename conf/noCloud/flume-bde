@@ -1,0 +1,118 @@
+a1.sources = bde
+a1.sinks = k1 
+a1.channels = c1
+#--------------------bde------------------------------
+a1.sources.bde.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.bde.channels = c1
+a1.sources.bde.skipToEnd = true
+a1.sources.bde.positionFile = ./bde.json
+a1.sources.bde.filegroups = f1 f2 f3 f4 f7 f8 f9 f10 f11 f12 f13 f14
+a1.sources.bde.fileHeader = true
+a1.sources.bde.interceptors = i1 i3 i4 
+a1.sources.bde.interceptors.i1.type = host
+a1.sources.bde.interceptors.i1.useIP = false
+a1.sources.bde.interceptors.i1.preserveExisting = true
+a1.sources.bde.interceptors.i1.hostHeader = hostname
+a1.sources.bde.multiline = true
+a1.sources.bde.multilinePattern = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.bde.multilinePatternBelong = previous
+a1.sources.bde.multilineMatched = false
+a1.sources.bde.multilineEventTimeoutSeconds = 30
+a1.sources.bde.multilineMaxBytes = 10485760
+a1.sources.bde.multilineMaxLines = 500
+a1.sources.bde.interceptors.i3.type = regex_extractor
+a1.sources.bde.interceptors.i3.regex = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.bde.interceptors.i3.serializers = s1 s2 s3
+a1.sources.bde.interceptors.i3.serializers.s1.name = logDate
+a1.sources.bde.interceptors.i3.serializers.s2.name = logLevel
+a1.sources.bde.interceptors.i3.serializers.s3.name = logContent
+a1.sources.bde.interceptors.i4.type = formatlogdate
+
+a1.sources.bde.filegroups.f1 = /var/log/hadoop-hdfs/.*DATANODE.*.out
+a1.sources.bde.headers.f1.isCloud = 0
+a1.sources.bde.headers.f1.cluster = IAD
+a1.sources.bde.headers.f1.module = Hdfs
+a1.sources.bde.headers.f1.role = DataNode
+a1.sources.bde.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f2 = /var/log/hadoop-hdfs/.*JOURNALNODE.*.out
+a1.sources.bde.headers.f2.isCloud = 0
+a1.sources.bde.headers.f2.cluster = IAD
+a1.sources.bde.headers.f2.module = Hdfs
+a1.sources.bde.headers.f2.role = JournalNode
+a1.sources.bde.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f3 = /var/log/hadoop-hdfs/.*FAILOVERCONTROLLER.*.out
+a1.sources.bde.headers.f3.isCloud = 0
+a1.sources.bde.headers.f3.cluster = IAD
+a1.sources.bde.headers.f3.module = Hdfs
+a1.sources.bde.headers.f3.role = FailoverController
+a1.sources.bde.headers.f3.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f4 = /var/log/hadoop-hdfs/.*NAMENODE.*.out
+a1.sources.bde.headers.f4.isCloud = 0
+a1.sources.bde.headers.f4.cluster = IAD
+a1.sources.bde.headers.f4.module = Hdfs
+a1.sources.bde.headers.f4.role = NameNode
+a1.sources.bde.headers.f4.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f7 = /var/log/spark2/.*history-server.*.log
+a1.sources.bde.headers.f7.isCloud = 0
+a1.sources.bde.headers.f7.cluster = IAD
+a1.sources.bde.headers.f7.module = Spark
+a1.sources.bde.headers.f7.role = HistoryServer
+a1.sources.bde.headers.f7.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f8 = /var/log/hbase/.*MASTER.*.out
+a1.sources.bde.headers.f8.isCloud = 0
+a1.sources.bde.headers.f8.cluster = IAD
+a1.sources.bde.headers.f8.module = Hbase
+a1.sources.bde.headers.f8.role = Master
+a1.sources.bde.headers.f8.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f9 = /var/log/hbase/.*REGIONSERVER.*.out
+a1.sources.bde.headers.f9.isCloud = 0
+a1.sources.bde.headers.f9.cluster = IAD
+a1.sources.bde.headers.f9.module = Hbase
+a1.sources.bde.headers.f9.role = RegionServer
+a1.sources.bde.headers.f9.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f10 = /var/log/kafka/.*broker.*.log
+a1.sources.bde.headers.f10.isCloud = 0
+a1.sources.bde.headers.f10.cluster = IAD
+a1.sources.bde.headers.f10.module = Kafka
+a1.sources.bde.headers.f10.role = Broker
+a1.sources.bde.headers.f10.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.bde.filegroups.f11 = /var/log/zookeeper/.*zookeeper.*.log
+a1.sources.bde.headers.f11.isCloud = 0
+a1.sources.bde.headers.f11.cluster = IAD
+a1.sources.bde.headers.f11.module = Zookeeper
+a1.sources.bde.headers.f11.role = Server
+a1.sources.bde.headers.f11.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.yarn.filegroups.f12 = /var/log/hadoop-yarn/.*NODEMANAGER.*.out
+a1.sources.yarn.headers.f12.isCloud = 0
+a1.sources.yarn.headers.f12.cluster = IAD
+a1.sources.yarn.headers.f12.module = Yarn
+a1.sources.yarn.headers.f12.role = NodeManager
+a1.sources.yarn.headers.f12.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.yarn.filegroups.f13 = /var/log/hadoop-yarn/.*RESOURCEMANAGER.*.out
+a1.sources.yarn.headers.f13.isCloud = 0
+a1.sources.yarn.headers.f13.cluster = IAD
+a1.sources.yarn.headers.f13.module = Yarn
+a1.sources.yarn.headers.f13.role = ResouRcemanager
+a1.sources.yarn.headers.f13.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.yarn.filegroups.f14 = /var/log/hadoop-mapreduce/.*JOBHISTORY.*.out
+a1.sources.yarn.headers.f14.isCloud = 0
+a1.sources.yarn.headers.f14.cluster = IAD
+a1.sources.yarn.headers.f14.module = Yarn
+a1.sources.yarn.headers.f14.role = JobHistory
+a1.sources.yarn.headers.f14.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

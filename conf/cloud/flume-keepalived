@@ -1,0 +1,41 @@
+a1.sources = keepalived
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source keepalived------------------------------
+a1.sources.keepalived.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.keepalived.channels = c1
+a1.sources.keepalived.skipToEnd = true
+a1.sources.keepalived.positionFile = ./keepalived.json
+a1.sources.keepalived.filegroups = f1
+a1.sources.keepalived.fileHeader = true
+a1.sources.keepalived.interceptors = i1 i2 i3
+a1.sources.keepalived.interceptors.i1.type = host
+a1.sources.keepalived.interceptors.i1.useIP = false
+a1.sources.keepalived.interceptors.i1.preserveExisting = true
+a1.sources.keepalived.interceptors.i1.hostHeader = hostname
+a1.sources.keepalived.interceptors.i2.type = regex_extractor
+a1.sources.keepalived.interceptors.i2.regex = ([a-zA-Z]{3}\\s+\\d+\\s+\\d{2}:\\d{2}:\\d{2})\\s+([\\s\\S]*)
+a1.sources.keepalived.interceptors.i2.serializers = s1 s2
+a1.sources.keepalived.interceptors.i2.serializers.s1.name = logDate
+a1.sources.keepalived.interceptors.i2.serializers.s2.name = logContent
+a1.sources.keepalived.interceptors.i3.type = formatlogdate
+a1.sources.keepalived.multiline = true
+a1.sources.keepalived.multilinePattern = ([a-zA-Z]{3}\\s+\\d+\\s+\\d{2}:\\d{2}:\\d{2})\\s+([\\s\\S]*)
+a1.sources.keepalived.multilinePatternBelong = previous
+a1.sources.keepalived.multilineMatched = false
+a1.sources.keepalived.multilineEventTimeoutSeconds = 10
+a1.sources.keepalived.multilineMaxBytes = 10485760
+a1.sources.keepalived.multilineMaxLines = 500
+
+a1.sources.keepalived.filegroups.f1 = /var/log/kolla/keepalived.log
+a1.sources.keepalived.headers.f1.isCloud = 1
+a1.sources.keepalived.headers.f1.cluster = BJPOC-REGION1
+a1.sources.keepalived.headers.f1.module = keepalived
+a1.sources.keepalived.headers.f1.role = keepalived
+a1.sources.keepalived.headers.f1.dateFormat = MMM dd HH:mm:ss
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

@@ -1,0 +1,75 @@
+a1.sources = qemu libvirt
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source qemu------------------------------
+a1.sources.qemu.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.qemu.channels = c1
+a1.sources.qemu.skipToEnd = true
+a1.sources.qemu.positionFile = ./qemu.json
+a1.sources.qemu.filegroups = f1
+a1.sources.qemu.fileHeader = true
+a1.sources.qemu.interceptors = i1 i2 i3
+a1.sources.qemu.interceptors.i1.type = host
+a1.sources.qemu.interceptors.i1.useIP = false
+a1.sources.qemu.interceptors.i1.preserveExisting = true
+a1.sources.qemu.interceptors.i1.hostHeader = hostname
+a1.sources.qemu.interceptors.i2.type = regex_extractor
+a1.sources.qemu.interceptors.i2.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\+\\d+:([\\s\\S]*)
+a1.sources.qemu.interceptors.i2.serializers = s1 s2
+a1.sources.qemu.interceptors.i2.serializers.s1.name = logDate
+a1.sources.qemu.interceptors.i2.serializers.s2.name = logContent
+a1.sources.qemu.interceptors.i3.type = formatlogdate
+a1.sources.qemu.multiline = true
+a1.sources.qemu.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\+\\d+:([\\s\\S]*)
+a1.sources.qemu.multilinePatternBelong = previous
+a1.sources.qemu.multilineMatched = false
+a1.sources.qemu.multilineEventTimeoutSeconds = 10
+a1.sources.qemu.multilineMaxBytes = 10485760
+a1.sources.qemu.multilineMaxLines = 500
+
+a1.sources.qemu.filegroups.f1 = /var/log/libvirt/qemu/instance.*.log
+a1.sources.qemu.headers.f1.isCloud = 1
+a1.sources.qemu.headers.f1.cluster = BJPOC-REGION1
+a1.sources.qemu.headers.f1.module = libvirt
+a1.sources.qemu.headers.f1.role = libvirt-qemu
+a1.sources.qemu.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+#--------------------source libvirt------------------------------
+a1.sources.libvirt.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.libvirt.channels = c1
+a1.sources.libvirt.skipToEnd = true
+a1.sources.libvirt.positionFile = ./libvirt.json
+a1.sources.libvirt.filegroups = f1
+a1.sources.libvirt.fileHeader = true
+a1.sources.libvirt.interceptors = i1 i2 i3
+a1.sources.libvirt.interceptors.i1.type = host
+a1.sources.libvirt.interceptors.i1.useIP = false
+a1.sources.libvirt.interceptors.i1.preserveExisting = true
+a1.sources.libvirt.interceptors.i1.hostHeader = hostname
+a1.sources.libvirt.interceptors.i2.type = regex_extractor
+a1.sources.libvirt.interceptors.i2.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\+\\d{4}: \\d+: ([info]+|[warning]+|[warn]+|[debug]+|[error]+) :([\\s\\S]*)
+a1.sources.libvirt.interceptors.i2.serializers = s1 s2 s3
+a1.sources.libvirt.interceptors.i2.serializers.s1.name = logDate
+a1.sources.libvirt.interceptors.i2.serializers.s2.name = logLevel
+a1.sources.libvirt.interceptors.i2.serializers.s3.name = logContent
+a1.sources.libvirt.interceptors.i3.type = formatlogdate
+a1.sources.libvirt.multiline = true
+a1.sources.libvirt.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\+\\d{4}: \\d+: ([info]+|[warning]+|[warn]+|[debug]+|[error]+) :([\\s\\S]*)
+a1.sources.libvirt.multilinePatternBelong = previous
+a1.sources.libvirt.multilineMatched = false
+a1.sources.libvirt.multilineEventTimeoutSeconds = 10
+a1.sources.libvirt.multilineMaxBytes = 10485760
+a1.sources.libvirt.multilineMaxLines = 500
+
+a1.sources.libvirt.filegroups.f1 = /var/log/kolla/libvirt/libvirtd.log
+a1.sources.libvirt.headers.f1.isCloud = 1
+a1.sources.libvirt.headers.f1.cluster = BJPOC-REGION1
+a1.sources.libvirt.headers.f1.module = libvirt
+a1.sources.libvirt.headers.f1.role = libvirt-libvirt
+a1.sources.libvirt.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

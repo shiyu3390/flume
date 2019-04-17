@@ -1,0 +1,76 @@
+a1.sources = cloudera
+a1.sinks = k1 
+a1.channels = c1
+#--------------------cloudera------------------------------
+a1.sources.cloudera.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.cloudera.channels = c1
+a1.sources.cloudera.skipToEnd = true
+a1.sources.cloudera.positionFile = ./cloudera.json
+a1.sources.cloudera.filegroups = f1 f2 f3 f4 f5 f6
+a1.sources.cloudera.fileHeader = true
+a1.sources.cloudera.interceptors = i1 i3 i4 
+a1.sources.cloudera.interceptors.i1.type = host
+a1.sources.cloudera.interceptors.i1.useIP = false
+a1.sources.cloudera.interceptors.i1.preserveExisting = true
+a1.sources.cloudera.interceptors.i1.hostHeader = hostname
+a1.sources.cloudera.multiline = true
+a1.sources.cloudera.multilinePattern = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.cloudera.multilinePatternBelong = previous
+a1.sources.cloudera.multilineMatched = false
+a1.sources.cloudera.multilineEventTimeoutSeconds = 30
+a1.sources.cloudera.multilineMaxBytes = 10485760
+a1.sources.cloudera.multilineMaxLines = 500
+a1.sources.cloudera.interceptors.i3.type = regex_extractor
+a1.sources.cloudera.interceptors.i3.regex = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.cloudera.interceptors.i3.serializers = s1 s2 s3
+a1.sources.cloudera.interceptors.i3.serializers.s1.name = logDate
+a1.sources.cloudera.interceptors.i3.serializers.s2.name = logLevel
+a1.sources.cloudera.interceptors.i3.serializers.s3.name = logContent
+a1.sources.cloudera.interceptors.i4.type = formatlogdate
+
+a1.sources.cloudera.filegroups.f1 = /var/log/cloudera-scm-server/cloudera-scm-server.log
+a1.sources.cloudera.headers.f1.isCloud = 0
+a1.sources.cloudera.headers.f1.cluster = IAD
+a1.sources.cloudera.headers.f1.module = Cloudera
+a1.sources.cloudera.headers.f1.role = Server
+a1.sources.cloudera.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.cloudera.filegroups.f2 = /var/log/cloudera-scm-firehose/.*ACTIVITYMONITOR.*.out
+a1.sources.cloudera.headers.f2.isCloud = 0
+a1.sources.cloudera.headers.f2.cluster = IAD
+a1.sources.cloudera.headers.f2.module = Cloudera
+a1.sources.cloudera.headers.f2.role = ActivityMonitor
+a1.sources.cloudera.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.cloudera.filegroups.f3 = /var/log/cloudera-scm-firehose/.*SERVICEMONITOR.*.out
+a1.sources.cloudera.headers.f3.isCloud = 0
+a1.sources.cloudera.headers.f3.cluster = IAD
+a1.sources.cloudera.headers.f3.module = Cloudera
+a1.sources.cloudera.headers.f3.role = ServiceMonitor
+a1.sources.cloudera.headers.f3.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.cloudera.filegroups.f4 = /var/log/cloudera-scm-alertpublisher/.*ALERTPUBLISHER.*.out
+a1.sources.cloudera.headers.f4.isCloud = 0
+a1.sources.cloudera.headers.f4.cluster = IAD
+a1.sources.cloudera.headers.f4.module = Cloudera
+a1.sources.cloudera.headers.f4.role = AlertPublisher
+a1.sources.cloudera.headers.f4.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.cloudera.filegroups.f5 = /var/log/cloudera-scm-eventserver/.*EVENTSERVER.*.out
+a1.sources.cloudera.headers.f5.isCloud = 0
+a1.sources.cloudera.headers.f5.cluster = IAD
+a1.sources.cloudera.headers.f5.module = Cloudera
+a1.sources.cloudera.headers.f5.role = EventServer
+a1.sources.cloudera.headers.f5.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.cloudera.filegroups.f6 = /var/log/cloudera-scm-firehose/.*HOSTMONITOR.*.out
+a1.sources.cloudera.headers.f6.isCloud = 0
+a1.sources.cloudera.headers.f6.cluster = IAD
+a1.sources.cloudera.headers.f6.module = Cloudera
+a1.sources.cloudera.headers.f6.role = HostMonitor
+a1.sources.cloudera.headers.f6.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

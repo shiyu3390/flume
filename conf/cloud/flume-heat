@@ -1,0 +1,58 @@
+a1.sources = heat
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source heat------------------------------
+a1.sources.heat.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.heat.channels = c1
+a1.sources.heat.skipToEnd = true
+a1.sources.heat.positionFile = ./heat.json
+a1.sources.heat.filegroups = f1 f2 f3
+a1.sources.heat.fileHeader = true
+a1.sources.heat.interceptors = i1 i3 i4
+a1.sources.heat.interceptors.i1.type = host
+a1.sources.heat.interceptors.i1.useIP = false
+a1.sources.heat.interceptors.i1.preserveExisting = true
+a1.sources.heat.interceptors.i1.hostHeader = hostname
+a1.sources.heat.interceptors.i3.type = regex_extractor
+a1.sources.heat.interceptors.i3.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.heat.interceptors.i3.serializers = s1 s2 s3 s4 s5
+a1.sources.heat.interceptors.i3.serializers.s1.name = logDate
+a1.sources.heat.interceptors.i3.serializers.s2.name = pid
+a1.sources.heat.interceptors.i3.serializers.s3.name = logLevel
+a1.sources.heat.interceptors.i3.serializers.s4.name = package
+a1.sources.heat.interceptors.i3.serializers.s5.name = logContent
+a1.sources.heat.interceptors.i4.type = formatlogdate
+a1.sources.heat.multiline = true
+a1.sources.heat.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.heat.multilinePatternBelong = previous
+a1.sources.heat.multilineMatched = false
+a1.sources.heat.multilineEventTimeoutSeconds = 10
+a1.sources.heat.multilineMaxBytes = 10485760
+a1.sources.heat.multilineMaxLines = 500
+
+a1.sources.heat.filegroups.f1 = /var/log/kolla/heat/.*api.log
+a1.sources.heat.headers.f1.isCloud = 1
+a1.sources.heat.headers.f1.cluster = BJPOC-REGION1
+a1.sources.heat.headers.f1.module = heat
+a1.sources.heat.headers.f1.role = heat-api
+a1.sources.heat.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.heat.filegroups.f2 = /var/log/kolla/heat/.*api-cfn.log
+a1.sources.heat.headers.f2.isCloud = 1
+a1.sources.heat.headers.f2.cluster = BJPOC-REGION1
+a1.sources.heat.headers.f2.module = heat
+a1.sources.heat.headers.f2.role = heat-api-cfn
+a1.sources.heat.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.heat.filegroups.f3 = /var/log/kolla/heat/.*engine.log
+a1.sources.heat.headers.f3.isCloud = 1
+a1.sources.heat.headers.f3.cluster = BJPOC-REGION1
+a1.sources.heat.headers.f3.module = heat
+a1.sources.heat.headers.f3.role = heat-engine
+a1.sources.heat.headers.f3.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

@@ -1,0 +1,48 @@
+a1.sources = sparkapp
+a1.sinks = k1 
+a1.channels = c1
+#--------------------sparkapp------------------------------
+a1.sources.sparkapp.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.sparkapp.channels = c1
+a1.sources.sparkapp.skipToEnd = true
+a1.sources.sparkapp.positionFile = ./sparkapp.json
+a1.sources.sparkapp.filegroups = f14 f15
+a1.sources.sparkapp.fileHeader = true
+a1.sources.sparkapp.interceptors = i1 i3 i4 
+a1.sources.sparkapp.interceptors.i1.type = host
+a1.sources.sparkapp.interceptors.i1.useIP = false
+a1.sources.sparkapp.interceptors.i1.preserveExisting = true
+a1.sources.sparkapp.interceptors.i1.hostHeader = hostname
+a1.sources.sparkapp.multiline = true
+a1.sources.sparkapp.multilinePattern = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.sparkapp.multilinePatternBelong = previous
+a1.sources.sparkapp.multilineMatched = false
+a1.sources.sparkapp.multilineEventTimeoutSeconds = 30
+a1.sources.sparkapp.multilineMaxBytes = 10485760
+a1.sources.sparkapp.multilineMaxLines = 500
+a1.sources.sparkapp.interceptors.i3.type = regex_extractor
+a1.sources.sparkapp.interceptors.i3.regex = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.sparkapp.interceptors.i3.serializers = s1 s2 s3
+a1.sources.sparkapp.interceptors.i3.serializers.s1.name = logDate
+a1.sources.sparkapp.interceptors.i3.serializers.s2.name = logLevel
+a1.sources.sparkapp.interceptors.i3.serializers.s3.name = logContent
+a1.sources.sparkapp.interceptors.i4.type = formatlogdate
+
+a1.sources.sparkapp.filegroups.f14 = /var/log/spark/logStatistics/.*.log
+a1.sources.sparkapp.headers.f14.isCloud = 0
+a1.sources.sparkapp.headers.f14.cluster = IAD
+a1.sources.sparkapp.headers.f14.module = Spark
+a1.sources.sparkapp.headers.f14.role = Application
+a1.sources.sparkapp.headers.f14.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.sources.sparkapp.filegroups.f15 = /var/log/spark/monitor/.*.log
+a1.sources.sparkapp.headers.f15.isCloud = 0
+a1.sources.sparkapp.headers.f15.cluster = IAD
+a1.sources.sparkapp.headers.f15.module = Spark
+a1.sources.sparkapp.headers.f15.role = Application
+a1.sources.sparkapp.headers.f15.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

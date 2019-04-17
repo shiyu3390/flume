@@ -1,0 +1,80 @@
+a1.sources = nova
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source nova------------------------------
+a1.sources.nova.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.nova.channels = c1
+a1.sources.nova.skipToEnd = true
+a1.sources.nova.positionFile = ./nova.json
+a1.sources.nova.filegroups = f1 f2 f3 f4 f5 f6
+a1.sources.nova.fileHeader = true
+a1.sources.nova.interceptors = i1 i2 i3 i4
+a1.sources.nova.interceptors.i1.type = host
+a1.sources.nova.interceptors.i1.useIP = false
+a1.sources.nova.interceptors.i1.preserveExisting = true
+a1.sources.nova.interceptors.i1.hostHeader = hostname
+a1.sources.nova.interceptors.i2.type = traceback
+a1.sources.nova.interceptors.i3.type = regex_extractor
+a1.sources.nova.interceptors.i3.regex = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.nova.interceptors.i3.serializers = s1 s2 s3 s4 s5
+a1.sources.nova.interceptors.i3.serializers.s1.name = logDate
+a1.sources.nova.interceptors.i3.serializers.s2.name = pid
+a1.sources.nova.interceptors.i3.serializers.s3.name = logLevel
+a1.sources.nova.interceptors.i3.serializers.s4.name = package
+a1.sources.nova.interceptors.i3.serializers.s5.name = logContent
+a1.sources.nova.interceptors.i4.type = formatlogdate
+a1.sources.nova.multiline = true
+a1.sources.nova.multilinePattern = (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(\\d+)\\s+([INFO]+|[WARNING]+|[DEBUG]+|[ERROR]+)\\s+(\\S+)\\s+([\\s\\S]*)
+a1.sources.nova.multilinePatternBelong = previous
+a1.sources.nova.multilineMatched = false
+a1.sources.nova.multilineEventTimeoutSeconds = 10
+a1.sources.nova.multilineMaxBytes = 10485760
+a1.sources.nova.multilineMaxLines = 500
+
+a1.sources.nova.filegroups.f1 = /var/log/kolla/nova/.*api.log
+a1.sources.nova.headers.f1.isCloud = 1
+a1.sources.nova.headers.f1.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f1.module = nova
+a1.sources.nova.headers.f1.role = nova-api
+a1.sources.nova.headers.f1.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.nova.filegroups.f2 = /var/log/kolla/nova/.*conductor.log
+a1.sources.nova.headers.f2.isCloud = 1
+a1.sources.nova.headers.f2.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f2.module = nova
+a1.sources.nova.headers.f2.role = nova-conductor
+a1.sources.nova.headers.f2.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.nova.filegroups.f3 = /var/log/kolla/nova/.*scheduler.log
+a1.sources.nova.headers.f3.isCloud = 1
+a1.sources.nova.headers.f3.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f3.module = nova
+a1.sources.nova.headers.f3.role = nova-scheduler
+a1.sources.nova.headers.f3.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.nova.filegroups.f4 = /var/log/kolla/nova/.*consoleauth.log
+a1.sources.nova.headers.f4.isCloud = 1
+a1.sources.nova.headers.f4.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f4.module = nova
+a1.sources.nova.headers.f4.role = nova-consoleauth
+a1.sources.nova.headers.f4.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.nova.filegroups.f5 = /var/log/kolla/nova/.*novncproxy.log
+a1.sources.nova.headers.f5.isCloud = 1
+a1.sources.nova.headers.f5.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f5.module = nova
+a1.sources.nova.headers.f5.role = nova-novncproxy
+a1.sources.nova.headers.f5.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.sources.nova.filegroups.f6 = /var/log/kolla/nova/.*compute.log
+a1.sources.nova.headers.f6.isCloud = 1
+a1.sources.nova.headers.f6.cluster = BJPOC-REGION1
+a1.sources.nova.headers.f6.module = nova
+a1.sources.nova.headers.f6.role = nova-compute
+a1.sources.nova.headers.f6.dateFormat = yyyy-MM-dd HH:mm:ss.SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false

@@ -1,0 +1,41 @@
+a1.sources = elasticsearch
+a1.sinks = k1 
+a1.channels = c1
+#--------------------elasticsearch------------------------------
+a1.sources.elasticsearch.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.elasticsearch.channels = c1
+a1.sources.elasticsearch.skipToEnd = true
+a1.sources.elasticsearch.positionFile = ./elasticsearch.json
+a1.sources.elasticsearch.filegroups = f22 
+a1.sources.elasticsearch.fileHeader = true
+a1.sources.elasticsearch.interceptors = i1 i3 i4 
+a1.sources.elasticsearch.interceptors.i1.type = host
+a1.sources.elasticsearch.interceptors.i1.useIP = false
+a1.sources.elasticsearch.interceptors.i1.preserveExisting = true
+a1.sources.elasticsearch.interceptors.i1.hostHeader = hostname
+a1.sources.elasticsearch.multiline = true
+a1.sources.elasticsearch.multilinePattern = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.elasticsearch.multilinePatternBelong = previous
+a1.sources.elasticsearch.multilineMatched = false
+a1.sources.elasticsearch.multilineEventTimeoutSeconds = 30
+a1.sources.elasticsearch.multilineMaxBytes = 10485760
+a1.sources.elasticsearch.multilineMaxLines = 500
+a1.sources.elasticsearch.interceptors.i3.type = regex_extractor
+a1.sources.elasticsearch.interceptors.i3.regex = (\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}\\:\\d{2}\\:\\d{2}[,]\\d{3})\\s+([INFO]+|[WARN]+|[DEBUG]+|[ERROR]+)\\s+([\\s\\S]*)
+a1.sources.elasticsearch.interceptors.i3.serializers = s1 s2 s3
+a1.sources.elasticsearch.interceptors.i3.serializers.s1.name = logDate
+a1.sources.elasticsearch.interceptors.i3.serializers.s2.name = logLevel
+a1.sources.elasticsearch.interceptors.i3.serializers.s3.name = logContent
+a1.sources.elasticsearch.interceptors.i4.type = formatlogdate
+
+a1.sources.elasticsearch.filegroups.f22 = /var/log/elasticsearch/sinorail.log
+a1.sources.elasticsearch.headers.f22.isCloud = 0
+a1.sources.elasticsearch.headers.f22.cluster = IAD
+a1.sources.elasticsearch.headers.f22.module = ElasticSearch
+a1.sources.elasticsearch.headers.f22.role = ElasticSearch
+a1.sources.elasticsearch.headers.f22.dateFormat = yyyy-MM-dd HH:mm:ss,SSS
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = no_cloud_log_default
+a1.channels.c1.parseAsFlumeEvent = false

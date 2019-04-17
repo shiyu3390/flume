@@ -1,0 +1,36 @@
+a1.sources = haproxy
+a1.sinks = k1 
+a1.channels = c1
+
+#--------------------source haproxy------------------------------
+a1.sources.haproxy.type = org.apache.flume.source.sinorail.test.taildir.TaildirSource
+a1.sources.haproxy.channels = c1
+a1.sources.haproxy.skipToEnd = true
+a1.sources.haproxy.positionFile = ./haproxy.json
+a1.sources.haproxy.filegroups = f1
+a1.sources.haproxy.fileHeader = true
+a1.sources.haproxy.interceptors = i1 i2
+a1.sources.haproxy.interceptors.i1.type = host
+a1.sources.haproxy.interceptors.i1.useIP = false
+a1.sources.haproxy.interceptors.i1.preserveExisting = true
+a1.sources.haproxy.interceptors.i1.hostHeader = hostname
+a1.sources.haproxy.interceptors.i2.type = formatlogdate
+a1.sources.haproxy.multiline = true
+a1.sources.haproxy.multilinePattern = [\\s\\S]*
+a1.sources.haproxy.multilinePatternBelong = previous
+a1.sources.haproxy.multilineMatched = false
+a1.sources.haproxy.multilineEventTimeoutSeconds = 10
+a1.sources.haproxy.multilineMaxBytes = 10485760
+a1.sources.haproxy.multilineMaxLines = 500
+
+a1.sources.haproxy.filegroups.f1 = /var/log/kolla/haproxy/haproxy.*.log
+a1.sources.haproxy.headers.f1.isCloud = 1
+a1.sources.haproxy.headers.f1.cluster = BJPOC-REGION1
+a1.sources.haproxy.headers.f1.module = haproxy
+a1.sources.haproxy.headers.f1.role = haproxy
+a1.sources.haproxy.headers.f1.dateFormat = MMM dd HH:mm:ss
+
+a1.channels.c1.type = org.apache.flume.sinorail.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = BrokerLists
+a1.channels.c1.kafka.topic = log_default
+a1.channels.c1.parseAsFlumeEvent = false
